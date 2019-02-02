@@ -1,35 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var mongodb = require('mongodb');
-var client = mongodb.MongoClient;
 
-var uri = "mongodb://user:user@mongo/test-app";
+var apiRouter = require('./api');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.use('/api', apiRouter);
+
+router.get('*', function (req, res, next) {
+	res.send("Error 404: Page not Found");
+
 });
-
-router.get('/data/from/db', function(req, res, next) {
-    client.connect(uri, function (err, db) {
-	    if (err) return next(err);    
-    	var collection = db.collection('dummy');
-    	collection.find({}).toArray(function(err, docs) {
-			if (err) return next(err);
-			return res.json(docs);
-    	});			
-	});
-});
-
-router.post('/data/into/db', function(req, res, next) {
-	client.connect(uri, function (err, db) {
-	    if (err) return next(err);
-    	var collection = db.collection('dummy');
-    	collection.insertMany(req.body, function(err, result) {
-			return res.json({ result: "success" });
-    	});
-	});
-});
-
 
 module.exports = router;
