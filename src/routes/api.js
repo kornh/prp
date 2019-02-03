@@ -5,14 +5,6 @@ var auth = require('../middleware/auth');
 var codes = require('../config/status-code');
 
 
-/** Set session data */
-router.use('/:database', function (req, res, next) {
-  var database = req.params.database
-  if (!req.session[database])
-    req.session[database] = {};
-  next();
-});
-
 /** Auth user in */
 router.post('/:database/login', function (req, res, next) {
   var database = req.params.database
@@ -21,7 +13,7 @@ router.post('/:database/login', function (req, res, next) {
     response.userId = req.session[database].userId;
     return res.json(response)
   }
-  auth(database, req.body, function (err, userId) {
+  auth.api(database, req.body, function (err, userId) {
     if (err) return res.json(err);
     req.session[database].userId = userId;
     var response = codes['0002'];

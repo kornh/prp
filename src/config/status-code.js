@@ -23,7 +23,10 @@ var codes = {
         code: "0005",
         message: "Could not find User!"
     },
-    '0007': {},
+    '0007': {
+        code: "0007",
+        message: "User has no adminstrator role!"
+    },
     '0008': {},
 }
 module.exports = codes;
