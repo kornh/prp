@@ -2,8 +2,10 @@ var bcrypt = require('bcryptjs');
 var query = require('./query');
 var codes = require('../config/status-code');
 
+var salt = 11;
+
 var auth = {};
-auth.api = function (database, params, callback) {
+auth.user = function (database, params, callback) {
   query.connect(database, function (err, db) {
     if (err) return callback(codes['0005']);
     var collection = db.collection('_app.user');
@@ -13,34 +15,17 @@ auth.api = function (database, params, callback) {
       if (err) return callback(codes['0005']);
       if (!user) return callback(codes['0006']);
       var match = bcrypt.compareSync(params.password, user.password);
-      //var hash = bcrypt.hashSync(params.password, 11);
       if (match) {
-        return callback(null, user._id);
+        var isAdmin = (!!user.roles && (user.roles.indexOf('admin') >= 0))
+        return callback(null, user._id, isAdmin);
       } else {
         callback(codes['0004'], null);
       }
     });
   });
 }
-auth.admin = function (database, params, callback) {
-  query.connect(database, function (err, db) {
-    if (err) return callback(codes['0005']);
-    var collection = db.collection('_app.user');
-    collection.findOne({
-      user: params.user
-    }, function (err, user) {
-      if (err) return callback(codes['0005']);
-      if (!user) return callback(codes['0006']);
-      if (!user.roles || (user.roles.indexOf('admin') < 0)) return callback(codes['0007']);
-      var match = bcrypt.compareSync(params.password, user.password);
-      //var hash = bcrypt.hashSync(params.password, 11);
-      if (match) {
-        return callback(null, user._id);
-      } else {
-        callback(codes['0004'], null);
-      }
-    });
-  });
+auth.hashString = function (string) {
+  return bcrypt.hashSync(string, salt);
 }
 
 module.exports = auth;

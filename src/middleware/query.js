@@ -39,6 +39,7 @@ var query = {
         query.connect(params.database, function (err, db) {
             if (!params.module) return callback("No Module", null);
             var collection = db.collection(params.module);
+            if (!Array.isArray(data)) data = [data];
             collection.insertMany(data, function (err, result) {
                 callback(null, result.insertedIds);
             });

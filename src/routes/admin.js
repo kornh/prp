@@ -4,9 +4,10 @@ var auth = require('../middleware/auth');
 
 router.post('/:database/login', function (req, res, next) {
   var database = req.params.database
-  auth.admin(database, req.body, function (err, userId) {
-    if (err) return res.redirect('login');
+  auth.user(database, req.body, function (err, userId, isAdmin) {
+    if (err || !isAdmin) return res.redirect('login');
     req.session[database].userId = userId;
+    req.session[database].isAdmin = isAdmin;
     return res.redirect('.');
   })
 });

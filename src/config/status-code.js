@@ -27,6 +27,9 @@ var codes = {
         code: "0007",
         message: "User has no adminstrator role!"
     },
-    '0008': {},
+    '0008': {
+        code: "0008",
+        message: "Can not query system data!"
+    },
 }
 module.exports = codes;
